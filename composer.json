@@ -1,0 +1,26 @@
+{
+    "name": "easydowork/yii2-swoole",
+    "description": "Yii2 http server with swoole",
+    "keywords": [
+        "yii2",
+        "swoole"
+    ],
+    "type": "project",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=7.1",
+        "yiisoft/yii2": "~2.0.6",
+        "yiisoft/yii2-bootstrap": "^2.0"
+    },
+    "require-dev": {
+        "swoole/ide-helper": "^4.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "easydowork\\swoole\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    }
+}

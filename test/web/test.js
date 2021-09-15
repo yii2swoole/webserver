@@ -1,0 +1,1 @@
+console.log('easydowork/yii2-swoole');
