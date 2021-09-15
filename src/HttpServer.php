@@ -113,13 +113,10 @@ class HttpServer
             $this->app->getErrorHandler()->handleError($exception->getCode(),$exception->getMessage(),$exception->getFile(),$exception->getLine());
             return false;
         } finally {
-
             if(!empty($exception)){
+                Yii::error($exception);
+            }else{
                 $this->app->getSession()->close();
-            }
-
-            if ($this->app->state == -1) {
-                !empty($exception) && Yii::error($exception);
             }
             $this->app->getLog()->getLogger()->flush(true);
         }
