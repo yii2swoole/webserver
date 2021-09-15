@@ -8,6 +8,7 @@ use easydowork\swoole\base\Instance;
  * @package easydowork\crontab\server
  * @property string $host
  * @property int $port
+ * @property int $mode
  * @property int $sock_type
  * @property array $settings
  * @property array $event
@@ -20,6 +21,8 @@ class Config
     public $host = '127.0.0.1';
 
     public $port = 9501;
+
+    public $mode = SWOOLE_PROCESS;
 
     public $sock_type = SWOOLE_SOCK_TCP;
 

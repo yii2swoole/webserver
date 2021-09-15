@@ -35,7 +35,7 @@ class HttpServer
     {
         $config = Config::getInstance();
 
-        $this->_server = new Server($config->host, $config->port, SWOOLE_PROCESS, $config->sock_type);
+        $this->_server = new Server($config->host, $config->port, $config->mode, $config->sock_type);
 
         $this->_server->set($config->settings);
 
