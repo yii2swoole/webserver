@@ -8,10 +8,10 @@ use yii\log\Logger;
 use yii\web\Controller;
 
 /**
- * Class SiteController
+ * Class SwooleController
  * @package yii2swoole\test\controllers
  */
-class SiteController  extends Controller
+class SwooleController  extends Controller
 {
 
     public function actionIndex()

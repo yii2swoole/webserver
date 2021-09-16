@@ -1,6 +1,7 @@
 <?php
 namespace yii2swoole\webserver;
 
+use Yii;
 use Swoole\Http\Server;
 use yii\base\ExitException;
 
@@ -13,6 +14,35 @@ class Application extends \yii\web\Application
 {
     public $swooleServer;
 
+    /**
+     * run
+     * @return int
+     */
+    public function run()
+    {
+        try {
+            return parent::run();
+        }catch (\Exception $e) {
+            $this->getErrorHandler()->handleException($e);
+        } catch (\Throwable $e) {
+            $this->getErrorHandler()->handleError($e->getCode(),$e->getMessage(),$e->getFile(),$e->getLine());
+        } finally {
+            if(!empty($e)){
+                Yii::error($e);
+            }else{
+                $this->getSession()->close();
+            }
+            $this->getLog()->getLogger()->flush(true);
+        }
+    }
+
+    /**
+     * end
+     * @param int  $status
+     * @param null $response
+     * @return int|mixed
+     * @throws ExitException
+     */
     public function end($status = 0, $response = null)
     {
         if ($this->state === self::STATE_BEFORE_REQUEST || $this->state === self::STATE_HANDLING_REQUEST) {

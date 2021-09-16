@@ -97,29 +97,9 @@ class HttpServer
      */
     public function onRequest(Request $request, Response $response)
     {
-        try {
-            $this->app->getResponse()->setSwooleResponse($response);
-            $this->app->getRequest()->setSwooleRequest($request);
-            $this->app->run();
-        } catch (ExitException $exception) {
-            $this->app->end($exception->statusCode, isset($response) ? $response : null);
-            $this->app->state = -1;
-            return $exception->statusCode;
-        } catch (\Exception $exception) {
-            $this->app->getErrorHandler()->handleException($exception);
-            $this->app->state = -1;
-            return false;
-        } catch (\Throwable $exception) {
-            $this->app->getErrorHandler()->handleError($exception->getCode(),$exception->getMessage(),$exception->getFile(),$exception->getLine());
-            return false;
-        } finally {
-            if(!empty($exception)){
-                Yii::error($exception);
-            }else{
-                $this->app->getSession()->close();
-            }
-            $this->app->getLog()->getLogger()->flush(true);
-        }
+        $this->app->getResponse()->setSwooleResponse($response);
+        $this->app->getRequest()->setSwooleRequest($request);
+        $this->app->run();
     }
 
     /**
