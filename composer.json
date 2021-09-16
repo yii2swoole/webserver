@@ -1,5 +1,5 @@
 {
-    "name": "easydowork/yii2-swoole",
+    "name": "yii2swoole/webserver",
     "description": "Yii2 http server with swoole",
     "keywords": [
         "yii2",
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "easydowork\\swoole\\": "src/"
+            "yii2swoole\\webserver\\": "src/"
         },
         "files": [
             "src/functions.php"

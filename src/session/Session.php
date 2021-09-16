@@ -1,6 +1,6 @@
 <?php
 
-namespace easydowork\swoole\session;
+namespace yii2swoole\webserver\session;
 
 use Yii;
 use yii\base\InvalidArgumentException;
@@ -9,7 +9,7 @@ use yii\web\SessionIterator;
 
 /**
  * Class Session
- * @package easydowork\swoole\session
+ * @package yii2swoole\webserver\session
  */
 class Session extends \yii\web\Session
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace easydowork\swoole;
+namespace yii2swoole\webserver;
 
 use Yii;
 use yii\base\InvalidConfigException;
 
 /**
  * Class Response
- * @package easydowork\swoole
+ * @package yii2swoole\webserver
  */
 class Response extends \yii\web\Response
 {

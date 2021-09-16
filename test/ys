@@ -47,7 +47,7 @@ switch ($command){
 function run(bool $daemonize=false)
 {
     \Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
-    \easydowork\swoole\Config::getInstance([
+    \yii2swoole\webserver\Config::getInstance([
         'port'=>9502,
         'settings' => [
             'pid_file' => RUN_TIME_PATH.'/httpServer.pid',
@@ -58,9 +58,9 @@ function run(bool $daemonize=false)
         ],
     ]);
 
-    $httpServer = new \easydowork\swoole\HttpServer(getWebApp());
+    $httpServer = new \yii2swoole\webserver\HttpServer(getWebApp());
 
-    $autoReload = new \easydowork\swoole\helper\AutoReload($httpServer->getServer(),ROOT_PATH);
+    $autoReload = new \yii2swoole\webserver\helper\AutoReload($httpServer->getServer(),ROOT_PATH);
 
     $httpServer->getServer()->addProcess($autoReload->hotReloadProcess);
 
@@ -101,5 +101,5 @@ function getWebApp()
 {
     Yii::setAlias('@easydowork/test',__DIR__);
     $yiiConfig = require ROOT_PATH . '/config/main.php';
-    return new \easydowork\swoole\Application($yiiConfig);
+    return new \yii2swoole\webserver\Application($yiiConfig);
 }

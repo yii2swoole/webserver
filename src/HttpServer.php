@@ -1,6 +1,6 @@
 <?php
 
-namespace easydowork\swoole;
+namespace yii2swoole\webserver;
 
 use Swoole\Timer;
 use Yii;
@@ -13,7 +13,7 @@ use yii\base\ExitException;
  * Class HttpServer
  * @property-read Application $app
  * @property-read Server $_server
- * @package easydowork\swoole
+ * @package yii2swoole\webserver
  */
 class HttpServer
 {

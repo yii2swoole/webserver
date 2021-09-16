@@ -1,7 +1,7 @@
 <?php
-namespace easydowork\swoole;
+namespace yii2swoole\webserver;
 
-use easydowork\swoole\base\Instance;
+use yii2swoole\webserver\base\Instance;
 
 /**
  * Class Config

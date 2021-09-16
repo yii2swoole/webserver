@@ -1,6 +1,6 @@
 <?php
 
-namespace easydowork\swoole;
+namespace yii2swoole\webserver;
 
 use Yii;
 use yii\base\InvalidConfigException;
@@ -13,7 +13,7 @@ use Swoole\Http\Request as SwooleRequest;
 /**
  * Class Request
  * @package $webIndexFile
- * @package easydowork\swoole
+ * @package yii2swoole\webserver
  */
 class Request extends \yii\web\Request
 {

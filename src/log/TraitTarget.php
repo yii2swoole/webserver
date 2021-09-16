@@ -1,5 +1,5 @@
 <?php
-namespace easydowork\swoole\log;
+namespace yii2swoole\webserver\log;
 
 use Yii;
 use yii\helpers\ArrayHelper;

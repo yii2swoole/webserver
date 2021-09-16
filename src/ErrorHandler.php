@@ -1,6 +1,6 @@
 <?php
 
-namespace easydowork\swoole;
+namespace yii2swoole\webserver;
 
 use Yii;
 use yii\base\ErrorException;
@@ -9,7 +9,7 @@ use yii\base\ExitException;
 /**
  * swoole不支持set_exception_handler,在ErrorHandle中退出的方法都需要重写
  * Class ErrorHandler
- * @package easydowork\swoole
+ * @package yii2swoole\webserver
  */
 class ErrorHandler extends \yii\web\ErrorHandler
 {

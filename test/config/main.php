@@ -18,17 +18,17 @@ return [
             'class' => 'yii\caching\FileCache',
         ],
         'request' => [
-            'class' => 'easydowork\swoole\Request',
+            'class' => 'yii2swoole\webserver\Request',
             'cookieValidationKey' => 'B1uah2HVO-CEdFt5o-G46_4-dL3aEo_K',
         ],
         'response' =>[
-            'class'=>'easydowork\swoole\Response',
+            'class'=>'yii2swoole\webserver\Response',
         ],
         'user' => [
             'identityClass' => 'easydowork\test\models\User',
         ],
         'session' => [
-            'class'=> 'easydowork\swoole\session\Session',
+            'class'=> 'yii2swoole\webserver\session\Session',
             'name' => 'EasyDoWorkYii2Session',
         ],
         'log' => [
@@ -36,13 +36,13 @@ return [
             'targets' => [
                 [
                     //'class' => 'yii\log\FileTarget',
-                    'class' => 'easydowork\swoole\log\FileTarget',
+                    'class' => 'yii2swoole\webserver\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
             ],
         ],
         'errorHandler' => [
-            'class'=>'easydowork\swoole\ErrorHandler',
+            'class'=>'yii2swoole\webserver\ErrorHandler',
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,

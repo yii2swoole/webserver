@@ -1,6 +1,6 @@
 <?php
 
-namespace easydowork\swoole\helper;
+namespace yii2swoole\webserver\helper;
 
 use Swoole\Process;
 use Swoole\Server;
@@ -9,7 +9,7 @@ use yii\helpers\FileHelper;
 
 /**
  * Class AutoReload
- * @package easydowork\swoole\helper
+ * @package yii2swoole\webserver\helper
  */
 class AutoReload
 {

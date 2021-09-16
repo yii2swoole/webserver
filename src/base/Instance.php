@@ -1,5 +1,5 @@
 <?php
-namespace easydowork\swoole\base;
+namespace yii2swoole\webserver\base;
 
 /**
  * Trait Instance

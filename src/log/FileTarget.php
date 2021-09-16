@@ -1,5 +1,5 @@
 <?php
-namespace easydowork\swoole\log;
+namespace yii2swoole\webserver\log;
 
 class FileTarget extends \yii\log\FileTarget
 {
