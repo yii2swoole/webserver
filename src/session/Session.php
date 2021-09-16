@@ -96,7 +96,7 @@ class Session extends \yii\web\Session
 
         $this->_sessionStatus = PHP_SESSION_ACTIVE;
 
-        if (empty($this->_sessionId) ||$this->forceRegenerateId) {
+        if (empty($this->_sessionId) || $this->forceRegenerateId) {
             $this->regenerateID();
             $this->forceRegenerateId = false;
         }
@@ -152,6 +152,7 @@ class Session extends \yii\web\Session
         }
 
         $this->closeSession();
+        $this->_sessionId = '';
 
         $this->forceRegenerateId = false;
     }

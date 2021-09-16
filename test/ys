@@ -99,7 +99,7 @@ function stop()
  */
 function getWebApp()
 {
-    Yii::setAlias('@easydowork/test',__DIR__);
+    Yii::setAlias('@yii2swoole/test',__DIR__);
     $yiiConfig = require ROOT_PATH . '/config/main.php';
     return new \yii2swoole\webserver\Application($yiiConfig);
 }

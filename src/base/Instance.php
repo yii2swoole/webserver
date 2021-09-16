@@ -3,7 +3,7 @@ namespace yii2swoole\webserver\base;
 
 /**
  * Trait Instance
- * @package easydowork\crontab\base
+ * @package yii2swoole\webserver\base
  */
 trait Instance
 {

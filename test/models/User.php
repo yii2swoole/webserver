@@ -1,13 +1,13 @@
 <?php
 
-namespace easydowork\test\models;
+namespace yii2swoole\test\models;
 
 use yii\base\Component;
 use yii\web\IdentityInterface;
 
 /**
  * Class User
- * @package easydowork\test
+ * @package yii2swoole\test
  */
 class User  extends Component implements IdentityInterface
 {

@@ -5,7 +5,6 @@ use yii2swoole\webserver\base\Instance;
 
 /**
  * Class Config
- * @package easydowork\crontab\server
  * @property string $host
  * @property int $port
  * @property int $mode
@@ -13,6 +12,7 @@ use yii2swoole\webserver\base\Instance;
  * @property array $settings
  * @property array $event
  * @property mixed $beforeStart
+ * @package yii2swoole\webserver
  */
 class Config
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace easydowork\test\controllers;
+namespace yii2swoole\test\controllers;
 
 use yii\db\Exception;
 use yii\db\Query;
@@ -9,7 +9,7 @@ use yii\web\Controller;
 
 /**
  * Class SiteController
- * @package easydowork\test\controllers
+ * @package yii2swoole\test\controllers
  */
 class SiteController  extends Controller
 {

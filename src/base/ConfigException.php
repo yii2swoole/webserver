@@ -5,7 +5,7 @@ namespace yii2swoole\webserver\base;
 
 /**
  * Class ConfigException
- * @package easydowork\crontab\base
+ * @package yii2swoole\webserver\base
  */
 class ConfigException extends \Exception
 {

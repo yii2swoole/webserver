@@ -2,7 +2,7 @@
 return [
     'id' => 'Yii2Swoole',
     'basePath' => dirname(__DIR__),
-    'controllerNamespace' => 'easydowork\test\controllers',
+    'controllerNamespace' => 'yii2swoole\test\controllers',
     'bootstrap' => ['log'],
     'language' => 'zh-CN',
     'vendorPath' => __DIR__.'/../vendor',
@@ -25,11 +25,11 @@ return [
             'class'=>'yii2swoole\webserver\Response',
         ],
         'user' => [
-            'identityClass' => 'easydowork\test\models\User',
+            'identityClass' => 'yii2swoole\test\models\User',
         ],
         'session' => [
             'class'=> 'yii2swoole\webserver\session\Session',
-            'name' => 'EasyDoWorkYii2Session',
+            'name' => 'Yii2SwooleSession',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
