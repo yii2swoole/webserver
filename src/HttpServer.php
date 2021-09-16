@@ -93,7 +93,6 @@ class HttpServer
      * onRequest
      * @param Request  $request
      * @param Response $response
-     * @return false|int
      */
     public function onRequest(Request $request, Response $response)
     {
