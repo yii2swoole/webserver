@@ -17,7 +17,7 @@ class Session extends \yii\web\Session
     /**
      * @var string session name
      */
-    public $name='PHPSESSID';
+    public $name = 'PHPSESSID';
 
     /**
      * @var string session name
@@ -25,19 +25,9 @@ class Session extends \yii\web\Session
     public $savePath = '@runtime/session';
 
     /**
-     * @var string the name of the session variable that stores the flash message data.
-     */
-    public $flashParam = '__flash';
-
-    /**
-     * @var bool 每次请求是否重新生成会话id
-     */
-    public $forceRegenerateId = false;
-
-    /**
      * @var string session id
      */
-    protected $_sessionId = '';
+    protected $_sessionId = null;
 
     /**
      * @var array
@@ -50,11 +40,9 @@ class Session extends \yii\web\Session
     protected $_sessionStatus = PHP_SESSION_DISABLED;
 
     /**
-     * @var array parameter-value pairs to override default session cookie parameters that are used for session_set_cookie_params() function
-     * Array may have the following possible keys: 'lifetime', 'path', 'domain', 'secure', 'httponly'
-     * @see https://secure.php.net/manual/en/function.session-set-cookie-params.php
+     * @var array
      */
-    private $_cookieParams = ['httpOnly' => true];
+    private $_cookieParams = ['httponly' => true];
 
     /**
      * Initializes the application component.
@@ -62,7 +50,6 @@ class Session extends \yii\web\Session
      */
     public function init()
     {
-        //register_shutdown_function([$this, 'close']);
         $this->savePath = Yii::getAlias($this->savePath);
         FileHelper::createDirectory($this->savePath);
         if ($this->getIsActive()) {
@@ -94,12 +81,7 @@ class Session extends \yii\web\Session
 
         $this->setCookieParamsInternal();
 
-        $this->_sessionStatus = PHP_SESSION_ACTIVE;
-
-        if (empty($this->_sessionId) || $this->forceRegenerateId) {
-            $this->regenerateID();
-            $this->forceRegenerateId = false;
-        }
+        $this->sessionStart();
 
         if ($this->getIsActive()) {
             Yii::info('Session started', __METHOD__);
@@ -113,6 +95,23 @@ class Session extends \yii\web\Session
     }
 
     /**
+     * sessionStart
+     */
+    public function sessionStart()
+    {
+        $cookie = Yii::$app->request->getSwooleRequest()->cookie;
+        $sid = $cookie[$this->getName()] ?? null;
+        if ($sid) {
+            $this->_sessionId = $sid;
+            $this->getSessionData();
+        } else {
+            $this->regenerateID();
+        }
+
+        $this->_sessionStatus = PHP_SESSION_ACTIVE;
+    }
+
+    /**
      * setCookieSessionId
      * @throws \yii\base\InvalidConfigException
      */
@@ -120,25 +119,14 @@ class Session extends \yii\web\Session
     {
         if ($this->getHasSessionId() === false) {
             $data = $this->getCookieParams();
+            $response = Yii::$app->getResponse();
             /** @var yii\web\Cookie $cookie */
             if (isset($data['lifetime'], $data['path'], $data['domain'], $data['secure'], $data['httponly'])) {
-                $data['expire'] = $data['lifetime'] ? time() + $data['lifetime'] : 0;
-                $data['httpOnly'] = $data['httponly'];
-                $data['sameSite'] = $data['samesite'];
-                unset($data['lifetime'],$data['httponly'],$data['samesite']);
-                $cookie = Yii::createObject(array_merge($data, [
-                    'class' => 'yii\web\Cookie',
-                    'name' => $this->getName(),
-                    'value' => $this->getId(),
-                ]));
+                $expire = $data['lifetime'] ? time() + $data['lifetime'] : 0;
+                $response->getSwooleResponse()->cookie($this->getName(), $this->getId(), $expire, $data['path'], $data['domain'], $data['secure'], $data['httponly']);
             } else {
-                $cookie = Yii::createObject([
-                    'class' => 'yii\web\Cookie',
-                    'name' => $this->getName(),
-                    'value' => $this->getId(),
-                ]);
+                $response->getSwooleResponse()->cookie($this->getName(), $this->getId());
             }
-            Yii::$app->getResponse()->getCookies()->add($cookie);
         }
     }
 
@@ -150,11 +138,11 @@ class Session extends \yii\web\Session
         if ($this->getIsActive()) {
             $this->_sessionStatus = PHP_SESSION_DISABLED;
         }
-
         $this->closeSession();
+        if(isset($this->sessionData[$this->_sessionId])){
+            unset($this->sessionData[$this->_sessionId]);
+        }
         $this->_sessionId = '';
-
-        $this->forceRegenerateId = false;
     }
 
     /**
@@ -171,7 +159,6 @@ class Session extends \yii\web\Session
             $this->close();
             $this->destroySession($this->_sessionId);
             $this->open();
-            $this->forceRegenerateId = false;
         }
     }
 
@@ -308,38 +295,6 @@ class Session extends \yii\web\Session
     }
 
     /**
-     * @return array the session cookie parameters.
-     * @see https://secure.php.net/manual/en/function.session-get-cookie-params.php
-     */
-    public function getCookieParams()
-    {
-        return array_merge(session_get_cookie_params(), array_change_key_case($this->_cookieParams));
-    }
-
-    /**
-     * Sets the session cookie parameters.
-     * The cookie parameters passed to this method will be merged with the result
-     * of `session_get_cookie_params()`.
-     * @param array $value cookie parameters, valid keys include: `lifetime`, `path`, `domain`, `secure` and `httponly`.
-     * Starting with Yii 2.0.21 `sameSite` is also supported. It requires PHP version 7.3.0 or higher.
-     * For securtiy, an exception will be thrown if `sameSite` is set while using an unsupported version of PHP.
-     * To use this feature across different PHP versions check the version first. E.g.
-     * ```php
-     * [
-     *     'sameSite' => PHP_VERSION_ID >= 70300 ? yii\web\Cookie::SAME_SITE_LAX : null,
-     * ]
-     * ```
-     * See https://www.owasp.org/index.php/SameSite for more information about `sameSite`.
-     *
-     * @throws InvalidArgumentException if the parameters are incomplete.
-     * @see https://secure.php.net/manual/en/function.session-set-cookie-params.php
-     */
-    public function setCookieParams(array $value)
-    {
-        $this->_cookieParams = $value;
-    }
-
-    /**
      * Sets the session cookie parameters.
      * This method is called by [[open()]] when it is about to open the session.
      * @throws InvalidArgumentException if the parameters are incomplete.
@@ -353,110 +308,6 @@ class Session extends \yii\web\Session
             'domain' => '',
             'httpOnly' => true,
         ],$this->_cookieParams);
-    }
-
-    /**
-     * returns the value indicating whether cookies should be used to store session ids.
-     * @return bool|null the value indicating whether cookies should be used to store session IDs.
-     * @see setUseCookies()
-     */
-    public function getUseCookies()
-    {
-        if (ini_get('session.use_cookies') === '0') {
-            return false;
-        } elseif (ini_get('session.use_only_cookies') === '1') {
-            return true;
-        }
-        return null;
-    }
-
-    /**
-     * Sets the value indicating whether cookies should be used to store session IDs.
-     *
-     * Three states are possible:
-     *
-     * - true: cookies and only cookies will be used to store session IDs.
-     * - false: cookies will not be used to store session IDs.
-     * - null: if possible, cookies will be used to store session IDs; if not, other mechanisms will be used (e.g. GET parameter)
-     *
-     * @param bool|null $value the value indicating whether cookies should be used to store session IDs.
-     */
-    public function setUseCookies($value)
-    {
-        $this->freeze();
-        if ($value === false) {
-            ini_set('session.use_cookies', '0');
-            ini_set('session.use_only_cookies', '0');
-        } elseif ($value === true) {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '1');
-        } else {
-            ini_set('session.use_cookies', '1');
-            ini_set('session.use_only_cookies', '0');
-        }
-        $this->unfreeze();
-    }
-
-    /**
-     * @return float the probability (percentage) that the GC (garbage collection) process is started on every session initialization.
-     */
-    public function getGCProbability()
-    {
-        return (float) (ini_get('session.gc_probability') / ini_get('session.gc_divisor') * 100);
-    }
-
-    /**
-     * @param float $value the probability (percentage) that the GC (garbage collection) process is started on every session initialization.
-     * @throws InvalidArgumentException if the value is not between 0 and 100.
-     */
-    public function setGCProbability($value)
-    {
-        $this->freeze();
-        if ($value >= 0 && $value <= 100) {
-            // percent * 21474837 / 2147483647 ≈ percent * 0.01
-            ini_set('session.gc_probability', floor($value * 21474836.47));
-            ini_set('session.gc_divisor', 2147483647);
-        } else {
-            throw new InvalidArgumentException('GCProbability must be a value between 0 and 100.');
-        }
-        $this->unfreeze();
-    }
-
-    /**
-     * @return bool whether transparent sid support is enabled or not, defaults to false.
-     */
-    public function getUseTransparentSessionID()
-    {
-        return ini_get('session.use_trans_sid') == 1;
-    }
-
-    /**
-     * @param bool $value whether transparent sid support is enabled or not.
-     */
-    public function setUseTransparentSessionID($value)
-    {
-        $this->freeze();
-        ini_set('session.use_trans_sid', $value ? '1' : '0');
-        $this->unfreeze();
-    }
-
-    /**
-     * @return int the number of seconds after which data will be seen as 'garbage' and cleaned up.
-     * The default value is 1440 seconds (or the value of "session.gc_maxlifetime" set in php.ini).
-     */
-    public function getTimeout()
-    {
-        return (int) ini_get('session.gc_maxlifetime');
-    }
-
-    /**
-     * @param int $value the number of seconds after which data will be seen as 'garbage' and cleaned up
-     */
-    public function setTimeout($value)
-    {
-        $this->freeze();
-        ini_set('session.gc_maxlifetime', $value);
-        $this->unfreeze();
     }
 
     /**
@@ -490,7 +341,7 @@ class Session extends \yii\web\Session
      */
     protected function getSessionFileName()
     {
-        return $this->savePath.DIRECTORY_SEPARATOR.$this->getId();
+        return $this->savePath.DIRECTORY_SEPARATOR.$this->_sessionId;
     }
 
     /**
@@ -499,13 +350,13 @@ class Session extends \yii\web\Session
      */
     protected function getSessionData()
     {
-        if(empty($this->sessionData[$this->getId()])){
+        if(!isset($this->sessionData[$this->_sessionId])){
             $file = $this->getSessionFileName();
             if(is_file($file)){
-                $this->sessionData[$this->getId()] = unserialize(file_get_contents($file)?:'')?:[];
+                $this->sessionData[$this->_sessionId] = unserialize(file_get_contents($file)?:'')?:[];
             }
         }
-        return $this->sessionData[$this->getId()]??[];
+        return $this->sessionData[$this->_sessionId]??[];
     }
 
     /**
@@ -515,7 +366,7 @@ class Session extends \yii\web\Session
      */
     protected function setSessionData($value=[])
     {
-        $this->sessionData[$this->getId()] = $value;
+        $this->sessionData[$this->_sessionId] = $value;
         return true;
     }
 
@@ -540,7 +391,7 @@ class Session extends \yii\web\Session
      */
     public function closeSession()
     {
-        return file_put_contents($this->getSessionFileName(),serialize($this->sessionData[$this->getId()]??[]));
+        return file_put_contents($this->getSessionFileName(),serialize($this->sessionData[$this->_sessionId]??[]));
     }
 
     /**
@@ -991,16 +842,5 @@ class Session extends \yii\web\Session
         $this->freeze();
         session_cache_limiter($cacheLimiter);
         $this->unfreeze();
-    }
-
-    /**
-     * Returns current cache limiter
-     *
-     * @return string current cache limiter
-     * @since 2.0.14
-     */
-    public function getCacheLimiter()
-    {
-        return session_cache_limiter();
     }
 }
