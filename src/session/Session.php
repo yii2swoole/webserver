@@ -102,7 +102,7 @@ class Session extends \yii\web\Session
         $cookie = Yii::$app->request->getSwooleRequest()->cookie;
         $sid = $cookie[$this->getName()] ?? null;
         if ($sid) {
-            $this->_sessionId = $sid;
+            $this->setId($sid);
             $this->getSessionData();
         } else {
             $this->regenerateID();
@@ -113,7 +113,6 @@ class Session extends \yii\web\Session
 
     /**
      * setCookieSessionId
-     * @throws \yii\base\InvalidConfigException
      */
     private function setCookieSessionId()
     {
@@ -139,10 +138,10 @@ class Session extends \yii\web\Session
             $this->_sessionStatus = PHP_SESSION_DISABLED;
         }
         $this->closeSession();
-        if(isset($this->sessionData[$this->_sessionId])){
-            unset($this->sessionData[$this->_sessionId]);
+        if(isset($this->sessionData[$this->getId()])){
+            unset($this->sessionData[$this->getId()]);
         }
-        $this->_sessionId = '';
+        $this->setId(null);
     }
 
     /**
@@ -157,7 +156,7 @@ class Session extends \yii\web\Session
     {
         if ($this->getIsActive()) {
             $this->close();
-            $this->destroySession($this->_sessionId);
+            $this->destroySession($this->getId());
             $this->open();
         }
     }
@@ -241,7 +240,7 @@ class Session extends \yii\web\Session
      */
     public function regenerateID($deleteOldSession = false)
     {
-        $this->_sessionId = md5(uniqid().Yii::$app->request->getUserIP());
+        $this->setId(md5(uniqid().Yii::$app->request->getUserIP()));
         $this->_hasSessionId = false;
         $this->setCookieSessionId();
         $this->_hasSessionId = true;
@@ -341,7 +340,7 @@ class Session extends \yii\web\Session
      */
     protected function getSessionFileName()
     {
-        return $this->savePath.DIRECTORY_SEPARATOR.$this->_sessionId;
+        return $this->savePath.DIRECTORY_SEPARATOR.$this->getId();
     }
 
     /**
@@ -350,13 +349,13 @@ class Session extends \yii\web\Session
      */
     protected function getSessionData()
     {
-        if(!isset($this->sessionData[$this->_sessionId])){
+        if(!isset($this->sessionData[$this->getId()])){
             $file = $this->getSessionFileName();
             if(is_file($file)){
-                $this->sessionData[$this->_sessionId] = unserialize(file_get_contents($file)?:'')?:[];
+                $this->sessionData[$this->getId()] = unserialize(file_get_contents($file)?:'')?:[];
             }
         }
-        return $this->sessionData[$this->_sessionId]??[];
+        return $this->sessionData[$this->getId()]??[];
     }
 
     /**
@@ -366,7 +365,7 @@ class Session extends \yii\web\Session
      */
     protected function setSessionData($value=[])
     {
-        $this->sessionData[$this->_sessionId] = $value;
+        $this->sessionData[$this->getId()] = $value;
         return true;
     }
 
@@ -391,7 +390,7 @@ class Session extends \yii\web\Session
      */
     public function closeSession()
     {
-        return file_put_contents($this->getSessionFileName(),serialize($this->sessionData[$this->_sessionId]??[]));
+        return file_put_contents($this->getSessionFileName(),serialize($this->sessionData[$this->getId()]??[]));
     }
 
     /**
