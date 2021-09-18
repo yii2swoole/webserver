@@ -138,9 +138,7 @@ class Session extends \yii\web\Session
             $this->_sessionStatus = PHP_SESSION_DISABLED;
         }
         $this->closeSession();
-        if(isset($this->sessionData[$this->getId()])){
-            unset($this->sessionData[$this->getId()]);
-        }
+        $this->sessionData = [];
         $this->setId(null);
     }
 
@@ -349,13 +347,13 @@ class Session extends \yii\web\Session
      */
     protected function getSessionData()
     {
-        if(!isset($this->sessionData[$this->getId()])){
+        if(empty($this->sessionData)){
             $file = $this->getSessionFileName();
             if(is_file($file)){
-                $this->sessionData[$this->getId()] = unserialize(file_get_contents($file)?:'')?:[];
+                $this->sessionData = unserialize(file_get_contents($file)?:'')?:[];
             }
         }
-        return $this->sessionData[$this->getId()]??[];
+        return $this->sessionData;
     }
 
     /**
@@ -365,7 +363,7 @@ class Session extends \yii\web\Session
      */
     protected function setSessionData($value=[])
     {
-        $this->sessionData[$this->getId()] = $value;
+        $this->sessionData = $value;
         return true;
     }
 
@@ -390,7 +388,7 @@ class Session extends \yii\web\Session
      */
     public function closeSession()
     {
-        return file_put_contents($this->getSessionFileName(),serialize($this->sessionData[$this->getId()]??[]));
+        return file_put_contents($this->getSessionFileName(),serialize($this->sessionData??[]));
     }
 
     /**
