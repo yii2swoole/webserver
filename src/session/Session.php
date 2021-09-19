@@ -83,15 +83,11 @@ class Session extends \yii\web\Session
 
         $this->sessionStart();
 
-        if ($this->getIsActive()) {
-            Yii::info('Session started', __METHOD__);
-            $this->updateFlashCounters();
-            $this->setCookieSessionId();
-        } else {
-            $error = error_get_last();
-            $message = isset($error['message']) ? $error['message'] : 'Failed to start session.';
-            Yii::error($message, __METHOD__);
-        }
+        Yii::info('Session started', __METHOD__);
+
+        $this->updateFlashCounters();
+
+        $this->setCookieSessionId();
     }
 
     /**
@@ -238,7 +234,7 @@ class Session extends \yii\web\Session
      */
     public function regenerateID($deleteOldSession = false)
     {
-        $this->setId(md5(uniqid().Yii::$app->request->getUserIP()));
+        $this->setId(md5(uniqid('',true).Yii::$app->request->getUserIP()));
         $this->_hasSessionId = false;
         $this->setCookieSessionId();
         $this->_hasSessionId = true;
