@@ -2,12 +2,12 @@
 
 namespace yii2swoole\webserver;
 
-use Swoole\Timer;
 use Yii;
+use Swoole\Timer;
+use Swoole\Http\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\Http\Server;
-use yii\base\ExitException;
+use yii2swoole\webserver\helper\ConsoleTable;
 
 /**
  * Class HttpServer
@@ -17,6 +17,8 @@ use yii\base\ExitException;
  */
 class HttpServer
 {
+
+    public static $version = '1.0.0';
 
     /**
      * @var Application
@@ -128,15 +130,33 @@ class HttpServer
         if(Config::getInstance()->beforeStart){
             call_user_func(Config::getInstance()->beforeStart, $this->_server);
         }
-$logo = <<<Shell
-__   ___ _ ____    ____                     _      
-\ \ / (_|_)___ \  / ___|_      _____   ___ | | ___ 
- \ V /| | | __) | \___ \ \ /\ / / _ \ / _ \| |/ _ \
-  | | | | |/ __/   ___) \ V  V / (_) | (_) | |  __/
-  |_| |_|_|_____| |____/ \_/\_/ \___/ \___/|_|\___|
+
+        $info = <<<Shell
+__   ___ _ ____     ____                     _      
+\ \ / (_|_)___ \   / ___|_      _____   ___ | | ___ 
+ \ V /| | | __) |  \___ \ \ /\ / / _ \ / _ \| |/ _ \
+  | | | | |/ __/    ___) \ V  V / (_) | (_) | |  __/
+  |_| |_|_|_____|  |____/ \_/\_/ \___/ \___/|_|\___|
 Shell;
-        print_success($logo);
-        print_r(PHP_EOL);
+
+        $daemonize = !empty($this->getServer()->setting['daemonize']) ? 'On' : 'Off';
+
+        $info .=  PHP_EOL.(new ConsoleTable(
+                ['Host', 'port', 'Daemonize', 'Version'],
+                [
+                    [$this->getServer()->host, $this->getServer()->port, $daemonize, self::$version]
+                ]))->fetch();
+
+        $info .= (new ConsoleTable(
+            ['Component', 'Version', 'Require'],
+            [
+                ['PHP', PHP_VERSION, '7.4 +'],
+                ['Yii2', Yii::getVersion(), '2.0.43 +'],
+                ['Swoole', SWOOLE_VERSION, '4.6.3 +'],
+            ]
+        ))->fetch();
+
+        print_success($info);
 
         $this->_server->start();
     }

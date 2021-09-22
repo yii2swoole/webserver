@@ -3,6 +3,7 @@ namespace yii2swoole\webserver;
 
 use Yii;
 use Swoole\Http\Server;
+use yii\base\ErrorException;
 use yii\base\ExitException;
 
 /**
@@ -40,7 +41,7 @@ class Application extends \yii\web\Application
      * end
      * @param int  $status
      * @param null $response
-     * @return int|mixed
+     * @return int
      * @throws ExitException
      */
     public function end($status = 0, $response = null)
