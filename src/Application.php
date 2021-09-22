@@ -3,7 +3,6 @@ namespace yii2swoole\webserver;
 
 use Yii;
 use Swoole\Http\Server;
-use yii\base\ErrorException;
 use yii\base\ExitException;
 
 /**
@@ -23,17 +22,18 @@ class Application extends \yii\web\Application
     {
         try {
             return parent::run();
-        }catch (\Exception $e) {
+        }catch (\Throwable $e) {
             $this->getErrorHandler()->handleException($e);
-        } catch (\Throwable $e) {
-            $this->getErrorHandler()->handleError($e->getCode(),$e->getMessage(),$e->getFile(),$e->getLine());
-        } finally {
+        }finally {
             if(!empty($e)){
                 Yii::error($e);
             }else{
                 $this->getSession()->close();
             }
-            $this->getLog()->getLogger()->flush(true);
+            $logger = $this->getLog()->getLogger();
+            if($logger->messages){
+                $logger->flush(true);
+            }
         }
     }
 
